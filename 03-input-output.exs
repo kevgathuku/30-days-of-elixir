@@ -40,8 +40,9 @@ defmodule CowInterrogator do
       {:ok, art} ->
         art
 
-      {:error, _} ->
+      {:error, reason} ->
         IO.puts("Error: cow.txt file not found")
+        IO.puts(:file.format_error(reason))
         System.halt(1)
     end
   end
