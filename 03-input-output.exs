@@ -10,7 +10,7 @@ defmodule CowInterrogator do
   """
   def get_name do
     IO.gets("What is your name? ")
-    |> String.strip()
+    |> String.trim()
   end
 
   def get_cow_lover do
@@ -18,12 +18,12 @@ defmodule CowInterrogator do
   end
 
   def interrogate do
-    name = get_name
+    name = get_name()
 
-    case String.downcase(get_cow_lover) do
+    case String.downcase(get_cow_lover()) do
       "y" ->
         IO.puts("Great! Here's a cow for you #{name}:")
-        IO.puts(cow_art)
+        IO.puts(cow_art())
 
       "n" ->
         IO.puts("That's a shame, #{name}.")
@@ -57,7 +57,7 @@ defmodule InputOutputTest do
     # this call checks if cow_art function returns art from txt file
     art = CowInterrogator.cow_art()
     # first is implemented in String module
-    assert strip(art) |> first == "("
+    assert trim(art) |> first == "("
   end
 end
 
