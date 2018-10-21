@@ -1,6 +1,6 @@
 # http://elixir-lang.org/getting-started/basic-types.html
 
-ExUnit.start
+ExUnit.start()
 
 defmodule ListTest do
   use ExUnit.Case
@@ -36,9 +36,9 @@ defmodule ListTest do
 
   test "List.fold" do
     list = [20, 10, 5, 2.5]
-    sum = List.foldr list, 0, &(&1 + &2)
+    sum = List.foldr(list, 0, &(&1 + &2))
     # or...
-    # sum = List.foldr list, 0, fn (num, sum) -> num + sum end
+    # sum = List.foldr list, 0, fn (num, acc) -> num + acc end
     assert sum == 37.5
   end
 
@@ -46,9 +46,9 @@ defmodule ListTest do
   # (if possible)
   test "Enum.reduce" do
     list = [20, 10, 5, 2.5]
-    sum = Enum.reduce list, 0, &(&1 + &2)
+    sum = Enum.reduce(list, 0, &(&1 + &2))
     # or...
-    # sum = Enum.reduce list, 0, fn (num, sum) -> num + sum end
+    # sum = Enum.reduce list, 0, fn (num, acc) -> num + acc end
     assert sum == 37.5
   end
 
@@ -74,30 +74,41 @@ defmodule ListTest do
   # Easy!
 
   test "manual reverse speed" do
-    {microsec, reversed} = :timer.tc fn ->     # Erlang function, yay!
-      Enum.reduce 1..1_000_000, [], fn (i, l) -> List.insert_at(l, 0, i) end
-    end
+    # Erlang function, yay!
+    {microsec, reversed} =
+      :timer.tc(fn ->
+        # Can also be written as
+        # Enum.reduce(1..1_000_000, [], fn num, acc -> [num | acc] end)
+        Enum.reduce(1..1_000_000, [], fn num, acc -> List.insert_at(acc, 0, num) end)
+      end)
+
     assert reversed == Enum.to_list(1_000_000..1)
-    IO.puts "manual reverse took #{microsec} microsecs"
+    IO.puts("manual reverse took #{microsec} microsecs")
   end
 
   # Another thing worth pointing out is it's cheap to insert at the front of a
   # list while it's expensive to insert at the end of a list (which is O(n)).
   test "speed of inserting at the end of a list" do
-    {microsec, reversed} = :timer.tc fn ->     # Erlang function, yay!
-      # It takes about 1.6 seconds on my laptop even with only 10000 elements.
-      # For 1..1_000_000, it would take a really long time.
-      Enum.reduce 1..10000, [], fn (i, l) -> List.insert_at(l, -1, i) end
-    end
+    # Erlang function, yay!
+    {microsec, reversed} =
+      :timer.tc(fn ->
+        # It takes about 1.6 seconds on my laptop even with only 10000 elements.
+        # For 1..1_000_000, it would take a really long time.
+        # List.insert_at -1 indicates inserting at the end of the list
+        Enum.reduce(1..10000, [], fn num, acc -> List.insert_at(acc, -1, num) end)
+      end)
+
     assert reversed == Enum.to_list(1..10000)
-    IO.puts "inserting at the end of a list took #{microsec} microsecs"
+    IO.puts("inserting at the end of a list took #{microsec} microsecs")
   end
 
   test "Enum.reverse speed" do
-    {microsec, reversed} = :timer.tc fn ->
-      Enum.reverse 1..1_000_000
-    end
+    {microsec, reversed} =
+      :timer.tc(fn ->
+        Enum.reverse(1..1_000_000)
+      end)
+
     assert reversed == Enum.to_list(1_000_000..1)
-    IO.puts "Enum.reverse took #{microsec} microsecs"
+    IO.puts("Enum.reverse took #{microsec} microsecs")
   end
 end
