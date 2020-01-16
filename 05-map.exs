@@ -1,6 +1,6 @@
 # https://hexdocs.pm/elixir/Map.html
 
-ExUnit.start
+ExUnit.start()
 
 defmodule MapTest do
   use ExUnit.Case
@@ -21,6 +21,7 @@ defmodule MapTest do
 
   test "." do
     assert sample().foo == 'bar'
+
     assert_raise KeyError, fn ->
       sample().non_existent
     end
@@ -39,10 +40,10 @@ defmodule MapTest do
 
   test "Update map using pattern matching syntax" do
     # You can only update existing keys in this way
-    assert %{ sample() | foo: 'bob'} == %{foo: 'bob', baz: 'quz'}
+    assert %{sample() | foo: 'bob'} == %{foo: 'bob', baz: 'quz'}
     # It doesn't work if you want to add new keys
     assert_raise KeyError, fn ->
-      %{ sample() | far: 'bob'}
+      %{sample() | far: 'bob'}
     end
   end
 
@@ -50,5 +51,8 @@ defmodule MapTest do
     # Map does not preserve order of keys, thus we Enum.sort
     assert Enum.sort(Map.values(sample())) == ['bar', 'quz']
   end
-end
 
+  test "Map.keys" do
+    assert Map.keys(sample()) == [:baz, :foo]
+  end
+end
