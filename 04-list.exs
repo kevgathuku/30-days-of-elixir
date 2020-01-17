@@ -77,9 +77,9 @@ defmodule ListTest do
     # Erlang function, yay!
     {microsec, reversed} =
       :timer.tc(fn ->
+        Enum.reduce(1..1_000_000, [], fn num, acc -> [num | acc] end)
         # Can also be written as
-        # Enum.reduce(1..1_000_000, [], fn num, acc -> [num | acc] end)
-        Enum.reduce(1..1_000_000, [], fn num, acc -> List.insert_at(acc, 0, num) end)
+        # Enum.reduce(1..1_000_000, [], fn num, acc -> List.insert_at(acc, 0, num) end)
       end)
 
     assert reversed == Enum.to_list(1_000_000..1)
