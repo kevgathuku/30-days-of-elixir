@@ -11,7 +11,7 @@ defmodule Fib do
   # also, anonymous functions cannot call themselves recursively :-(
 
   def fib(n) when n < 2 do
-    Enum.take @seed, n
+    Enum.take(@seed, n)
   end
 
   def fib(n) when n >= 2 do
@@ -30,6 +30,7 @@ defmodule Fib2 do
   Fibonacci Sequence function.
   This is my attempt to be more efficient by building the list
   backwards (and then reversing at the end).
+  'n' is the length of the output / the numbers you need
   """
 
   @seed [1, 0]
@@ -45,11 +46,13 @@ defmodule Fib2 do
   def fib2(acc, 0), do: Enum.reverse(acc)
 
   def fib2([first, second | _] = lst, n) do
+    # Enables appending to the beginning of the list,
+    # which should be more efficient
     fib2([first + second | lst], n - 1)
   end
 end
 
-ExUnit.start
+ExUnit.start()
 
 defmodule RecursionTest do
   use ExUnit.Case
@@ -73,9 +76,11 @@ defmodule RecursionTest do
   end
 
   test "benchmark" do
-    {microsecs, _} = :timer.tc fn -> fib(1000) end
-    IO.puts "fib() took #{microsecs} microsecs"     # 7118 microsecs
-    {microsecs, _} = :timer.tc fn -> fib2(1000) end
-    IO.puts "fib2() took #{microsecs} microsecs"    # 90 microsecs
+    {microsecs, _} = :timer.tc(fn -> fib(1000) end)
+    # 7118 microsecs
+    IO.puts("fib() took #{microsecs} microsecs")
+    {microsecs, _} = :timer.tc(fn -> fib2(1000) end)
+    # 90 microsecs
+    IO.puts("fib2() took #{microsecs} microsecs")
   end
 end

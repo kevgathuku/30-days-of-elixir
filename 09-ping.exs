@@ -26,7 +26,7 @@ defmodule Ping do
 
   """
   def ping_async(ip, parent) do
-    send parent, run_ping(ip)
+    send(parent, run_ping(ip))
   end
 
   @doc """
@@ -62,12 +62,14 @@ defmodule Subnet do
   """
   def ping(subnet) do
     all = ips(subnet)
-    Enum.each all, fn ip ->
+
+    Enum.each(all, fn ip ->
       # Task.start gives better logging than spawn when things go awry.
       # http://elixir-lang.org/getting-started/processes.html#tasks
       Task.start(Ping, :ping_async, [ip, self()])
-    end
-    wait %{}, Enum.count(all)
+    end)
+
+    wait(%{}, Enum.count(all))
   end
 
   @doc """
@@ -79,13 +81,15 @@ defmodule Subnet do
   end
 
   defp wait(results, 0), do: results
+
   defp wait(results, remaining) do
     receive do
       {:ok, ip, pingable?} ->
         results = Map.put(results, ip, pingable?)
         wait(results, remaining - 1)
+
       {:error, ip, error} ->
-        IO.puts "#{inspect error} for #{ip}"
+        IO.puts("#{inspect(error)} for #{ip}")
         wait(results, remaining - 1)
     end
   end
@@ -93,17 +97,19 @@ end
 
 # Command-line execution support
 # TODO is there a way to check if this script is being executed directly (vs imported elsewhere)?
-case System.argv do
+case System.argv() do
   [subnet] ->
     results = Subnet.ping(subnet)
+
     results
     |> Enum.filter(fn {_ip, exists} -> exists end)
     |> Enum.map(fn {ip, _} -> ip end)
-    |> Enum.sort
+    |> Enum.sort()
     |> Enum.join("\n")
-    |> IO.puts
+    |> IO.puts()
+
   _ ->
-    ExUnit.start
+    ExUnit.start()
 
     defmodule SubnetTest do
       use ExUnit.Case
